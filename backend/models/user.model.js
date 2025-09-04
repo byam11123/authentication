@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const User = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema);
 
 //here second object timestamp will automatically added createat and updateat fields into the document
-export default User;
