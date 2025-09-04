@@ -8,6 +8,7 @@ A comprehensive Node.js/Express/MongoDB authentication system with secure user r
 - Secure password hashing using bcrypt
 - JWT-based authentication with HTTP-only cookies
 - Email verification using Mailtrap
+- Welcome email after successful verification
 - Protection against common security vulnerabilities
 - RESTful API endpoints
 
@@ -36,6 +37,12 @@ A comprehensive Node.js/Express/MongoDB authentication system with secure user r
 - **Limited lifetime**: Tokens expire after 7 days to minimize risk if compromised
 - **Secure storage**: Tokens are stored in HTTP-only, secure cookies
 - **Minimal payload**: Only essential user ID is stored in tokens
+
+### Email Verification Security
+- **Time-limited tokens**: Verification tokens expire after 24 hours
+- **One-time use**: Tokens are cleared after successful verification
+- **Expiration validation**: Only non-expired tokens are accepted
+- **Secure random tokens**: 6-digit numeric verification codes
 
 ### Additional Security Practices
 - **Environment variables**: Sensitive data (database URLs, API keys, secrets) stored in environment variables
@@ -67,6 +74,7 @@ backend/
 ## API Endpoints
 
 - `POST /api/v1/auth/signup` - User registration
+- `POST /api/v1/auth/verify-email` - Email verification
 - `POST /api/v1/auth/login` - User login (placeholder)
 - `POST /api/v1/auth/logout` - User logout (placeholder)
 
@@ -97,6 +105,7 @@ backend/
 - Implement account lockout mechanisms after multiple failed login attempts
 - Add additional security headers (HSTS, CSP, etc.)
 - Implement proper session management with logout token invalidation
+- Add rate limiting to email verification endpoint to prevent abuse
 
 ## Technologies Used
 
