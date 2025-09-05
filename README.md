@@ -15,36 +15,43 @@ A comprehensive Node.js/Express/MongoDB authentication system with secure user r
 ## Security Measures
 
 ### XSS (Cross-Site Scripting) Protection
+
 - **HTTP-only cookies**: JWT tokens are stored in HTTP-only cookies, preventing client-side JavaScript from accessing them
 - **Response sanitization**: Passwords are explicitly excluded from API responses to clients
 
 ### CSRF (Cross-Site Request Forgery) Protection
+
 - **SameSite cookies**: Cookies are set with `sameSite: "strict"` attribute, ensuring they're only sent with requests originating from the same site
 
 ### SQL/NoSQL Injection Prevention
+
 - **Parameterized queries**: Using Mongoose ODM ensures all database queries are properly parameterized
 - **Schema validation**: Strict data type enforcement and validation rules
 - **Input validation**: Required fields are validated before database operations
 
 ### Password Security
+
 - **Strong hashing**: Passwords are hashed using bcrypt with 10 salt rounds
 - **Unique salts**: Each password gets a unique random salt automatically
 - **No plain text storage**: Only hashed passwords are stored in the database
 - **Response sanitization**: Passwords are never returned in API responses
 
 ### JWT Security
+
 - **Strong secrets**: JWTs are signed using secrets stored in environment variables
 - **Limited lifetime**: Tokens expire after 7 days to minimize risk if compromised
 - **Secure storage**: Tokens are stored in HTTP-only, secure cookies
 - **Minimal payload**: Only essential user ID is stored in tokens
 
 ### Email Verification Security
+
 - **Time-limited tokens**: Verification tokens expire after 24 hours
 - **One-time use**: Tokens are cleared after successful verification
 - **Expiration validation**: Only non-expired tokens are accepted
 - **Secure random tokens**: 6-digit numeric verification codes
 
 ### Additional Security Practices
+
 - **Environment variables**: Sensitive data (database URLs, API keys, secrets) stored in environment variables
 - **Input validation**: All required fields are validated before processing
 - **Unique email constraint**: Prevents duplicate account creation
