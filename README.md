@@ -9,6 +9,11 @@ A comprehensive Node.js/Express/MongoDB authentication system with secure user r
 - JWT-based authentication with HTTP-only cookies
 - Email verification using Mailtrap
 - Welcome email after successful verification
+- Password reset functionality with email
+- Password reset success notifications
+- Protected routes using middleware
+- Last login tracking
+- Session management with logout
 - Protection against common security vulnerabilities
 - RESTful API endpoints
 
@@ -50,12 +55,25 @@ A comprehensive Node.js/Express/MongoDB authentication system with secure user r
 - **Expiration validation**: Only non-expired tokens are accepted
 - **Secure random tokens**: 6-digit numeric verification codes
 
+### Password Reset Security
+- **Time-limited reset tokens**: Password reset tokens expire after 1 hour
+- **One-time use**: Reset tokens are cleared after successful password reset
+- **Secure random tokens**: Cryptographically secure random tokens for password resets
+- **Confirmation emails**: Success notification after password reset
+
+### Authentication Middleware
+- **Token verification**: Middleware to verify JWT tokens on protected routes
+- **Request augmentation**: Adds userId to request object for authorized access
+- **Error handling**: Proper error responses for unauthorized access
+
 ### Additional Security Practices
 
 - **Environment variables**: Sensitive data (database URLs, API keys, secrets) stored in environment variables
 - **Input validation**: All required fields are validated before processing
 - **Unique email constraint**: Prevents duplicate account creation
 - **Verification tokens**: Email verification with expiration times
+- **Last login tracking**: Records last login time for security monitoring
+- **Secure session management**: Proper cookie clearing on logout
 
 ## Project Structure
 
@@ -70,6 +88,8 @@ backend/
 │   ├── emails.js             # Email sending functions
 │   ├── emailTemplates.js     # HTML email templates
 │   └── mailtrap.config.js    # Mailtrap configuration
+├── middleware/
+│   └── verifyToken.js        # Authentication middleware
 ├── models/
 │   └── user.model.js         # User data model
 ├── routes/
@@ -82,8 +102,11 @@ backend/
 
 - `POST /api/v1/auth/signup` - User registration
 - `POST /api/v1/auth/verify-email` - Email verification
-- `POST /api/v1/auth/login` - User login (placeholder)
-- `POST /api/v1/auth/logout` - User logout (placeholder)
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/logout` - User logout
+- `POST /api/v1/auth/forgot-password` - Request password reset
+- `POST /api/v1/auth/reset-password/:token` - Reset password with token
+- `GET /api/v1/auth/check-auth` - Check authentication status (protected route)
 
 ## Setup
 
@@ -121,5 +144,7 @@ backend/
 - MongoDB with Mongoose
 - bcryptjs for password hashing
 - jsonwebtoken for JWT implementation
+- cookie-parser for handling cookies
 - Mailtrap for email verification
+- Crypto for generating secure random tokens
 - Dotenv for environment variable management
