@@ -1,6 +1,7 @@
 // Import required modules and dependencies
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./db/connectDB.js";
 import authRoutes from "./routes/auth.route.js";
@@ -11,6 +12,8 @@ dotenv.config();
 // Initialize Express application
 const app = express();
 const port = process.env.PORT || 5000;
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
