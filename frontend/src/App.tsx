@@ -6,7 +6,8 @@ import EmailVerification from "./pages/EmailVerification";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore.js";
 import { useEffect } from "react";
-import DashboardPage from "./pages/DashboardPage.js";
+import DashboardPage from "./pages/DashboardPage";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 //protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
