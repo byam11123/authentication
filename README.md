@@ -58,12 +58,14 @@ A comprehensive Node.js/Express/MongoDB authentication system with secure user r
 - **Secure random tokens**: 6-digit numeric verification codes
 
 ### Password Reset Security
+
 - **Time-limited reset tokens**: Password reset tokens expire after 1 hour
 - **One-time use**: Reset tokens are cleared after successful password reset
 - **Secure random tokens**: Cryptographically secure random tokens for password resets
 - **Confirmation emails**: Success notification after password reset
 
 ### Authentication Middleware
+
 - **Token verification**: Middleware to verify JWT tokens on protected routes
 - **Request augmentation**: Adds userId to request object for authorized access
 - **Error handling**: Proper error responses for unauthorized access
@@ -101,6 +103,10 @@ backend/
 
 frontend/
 └── src/
+    ├── components/
+    │   └── Input.jsx         # Reusable input component
+    ├── pages/
+    │   └── LoginPage.tsx     # Login form with validation
     └── store/
         └── authStore.js      # Zustand store for authentication state
 ```
@@ -117,18 +123,29 @@ frontend/
 
 ## Frontend Integration
 
-The frontend uses Zustand for state management with the `authStore.js` containing:
+The frontend is built with React and uses Zustand for state management. Key components include:
 
-- **State**: user data, authentication status, loading states, and error handling
-- **Actions**: signup, login, verifyEmail, checkAuth, and logout functions
-- **API Integration**: Axios configured to include credentials (cookies) with requests
-- **Authentication Flow**: Seamless integration with backend JWT authentication
+### State Management
+
+- **authStore.js**: Centralized authentication state with:
+  - **State**: user data, authentication status, loading states, and error handling
+  - **Actions**: signup, login, verifyEmail, checkAuth, and logout functions
+  - **API Integration**: Axios configured to include credentials (cookies) with requests
+  - **Authentication Flow**: Seamless integration with backend JWT authentication
 
 Key features of the authStore:
+
 - Automatic credential inclusion with `axios.defaults.withCredentials = true`
 - Loading states for better UX during API calls
 - Error handling for all authentication operations
 - Persistent authentication status checking
+
+### UI Components
+
+- **LoginPage.tsx**: Secure login form with email/password validation
+- **Input Component**: Reusable input field with icon support
+- **Animations**: Smooth transitions using Framer Motion
+- **Responsive Design**: Mobile-friendly layout
 
 ## Setup
 
@@ -166,6 +183,7 @@ Key features of the authStore:
 ## Technologies Used
 
 ### Backend
+
 - Node.js
 - Express.js
 - MongoDB with Mongoose
@@ -177,6 +195,10 @@ Key features of the authStore:
 - Dotenv for environment variable management
 
 ### Frontend
+
 - React.js
 - Zustand for state management
 - Axios for API requests
+- Framer Motion for animations
+- Lucide React for icons
+- React Router DOM for navigation
