@@ -137,7 +137,7 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res
-        .status(200)
+        .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
 
@@ -145,7 +145,7 @@ export const login = async (req, res) => {
     const isPasswordValid = await bcryptjs.compare(password, user.password);
     if (!isPasswordValid) {
       return res
-        .status(200)
+        .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
 

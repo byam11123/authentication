@@ -2,12 +2,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import FloatingShape from "./components/FloatingShape";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-import EmailVerification from "./pages/EmailVerification";
+import EmailVerificationPage from "./pages/EmailVerificationPage.js";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore.js";
 import { useEffect } from "react";
 import DashboardPage from "./pages/DashboardPage";
 import LoadingSpinner from "./components/LoadingSpinner";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 //protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -15,7 +17,7 @@ const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  if (!user.isVerified) {
+  if (!user || !user.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }
   return children;
@@ -25,14 +27,14 @@ const ProtectedRoute = ({ children }) => {
 
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
-  if (isAuthenticated && user.isVerified) {
+  if (isAuthenticated && user?.isVerified) {
     return <Navigate to="/" replace />;
   }
   return children;
 };
 
 function App() {
-  const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
+  const { isCheckingAuth, checkAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -88,7 +90,23 @@ function App() {
               </RedirectAuthenticatedUser>
             }
           />
-          <Route path="/verify-email" element={<EmailVerification />} />
+          <Route path="/verify-email" element={<EmailVerificationPage />} />
+          <Route
+            path="/forgot-password"
+            element={
+              <RedirectAuthenticatedUser>
+                <ForgotPasswordPage />
+              </RedirectAuthenticatedUser>
+            }
+          />
+          <Route
+            path="/reset-password/:token"
+            element={
+              <RedirectAuthenticatedUser>
+                <ResetPasswordPage />
+              </RedirectAuthenticatedUser>
+            }
+          />
         </Routes>
         <Toaster />
       </div>

@@ -16,6 +16,8 @@ A comprehensive Node.js/Express/MongoDB authentication system with secure user r
 - Session management with logout
 - Protection against common security vulnerabilities
 - RESTful API endpoints
+- Frontend state management with Zustand
+- React-based user interface
 
 ## Security Measures
 
@@ -96,6 +98,11 @@ backend/
 │   └── auth.route.js         # Authentication routes
 └── utils/
     └── generateTokenAndSetCookie.js  # JWT utilities
+
+frontend/
+└── src/
+    └── store/
+        └── authStore.js      # Zustand store for authentication state
 ```
 
 ## API Endpoints
@@ -108,18 +115,36 @@ backend/
 - `POST /api/v1/auth/reset-password/:token` - Reset password with token
 - `GET /api/v1/auth/check-auth` - Check authentication status (protected route)
 
+## Frontend Integration
+
+The frontend uses Zustand for state management with the `authStore.js` containing:
+
+- **State**: user data, authentication status, loading states, and error handling
+- **Actions**: signup, login, verifyEmail, checkAuth, and logout functions
+- **API Integration**: Axios configured to include credentials (cookies) with requests
+- **Authentication Flow**: Seamless integration with backend JWT authentication
+
+Key features of the authStore:
+- Automatic credential inclusion with `axios.defaults.withCredentials = true`
+- Loading states for better UX during API calls
+- Error handling for all authentication operations
+- Persistent authentication status checking
+
 ## Setup
 
 1. Clone the repository
-2. Install dependencies: `npm install`
-3. Create a `.env` file with the required environment variables:
+2. Install backend dependencies: `npm install`
+3. Navigate to frontend and install dependencies: `cd frontend && npm install`
+4. Create a `.env` file in the root with the required environment variables:
    ```
    PORT=5000
    MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
    MAILTRAP_TOKEN=your_mailtrap_token
+   CLIENT_URL=http://localhost:5173  # Frontend URL for password reset links
    ```
-4. Start the development server: `npm run dev`
+5. Start the backend development server: `npm run dev`
+6. In a separate terminal, start the frontend: `cd frontend && npm run dev`
 
 ## Environment Variables
 
@@ -127,6 +152,7 @@ backend/
 - `MONGO_URI`: MongoDB connection string
 - `JWT_SECRET`: Secret key for signing JWT tokens
 - `MAILTRAP_TOKEN`: Mailtrap API token for sending verification emails
+- `CLIENT_URL`: Frontend URL for password reset links (e.g., http://localhost:5173)
 
 ## Security Enhancements to Consider
 
@@ -139,6 +165,7 @@ backend/
 
 ## Technologies Used
 
+### Backend
 - Node.js
 - Express.js
 - MongoDB with Mongoose
@@ -148,3 +175,8 @@ backend/
 - Mailtrap for email verification
 - Crypto for generating secure random tokens
 - Dotenv for environment variable management
+
+### Frontend
+- React.js
+- Zustand for state management
+- Axios for API requests
