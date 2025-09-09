@@ -18,7 +18,12 @@ const port = process.env.PORT || 5000;
 
 const __dirname = path.resolve();
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+// Configure CORS for both development and production
+const corsOrigin = process.env.NODE_ENV === "production"
+  ? process.env.CLIENT_URL || true  // In production, use CLIENT_URL env var or allow all origins
+  : "http://localhost:5173";
+
+app.use(cors({ origin: corsOrigin, credentials: true }));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
