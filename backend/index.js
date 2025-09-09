@@ -34,13 +34,9 @@ app.use(cookieParser());
 // Mount authentication routes under the /api/v1/auth path
 app.use("/api/v1/auth", authRoutes);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "frontend", "dist")));
-
-  app.get(/^\/(?!api).*$/, (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
-  });
-}
+// In Vercel, the frontend is served as static files via the build output, 
+// so we don't need to serve it from Express.
+// This section is removed to avoid routing conflicts.
 // Start the server and connect to the database
 const startServer = async () => {
   try {
