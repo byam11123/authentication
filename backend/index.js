@@ -37,10 +37,19 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 // Start the server and connect to the database
-app.listen(port, () => {
-  // Connect to MongoDB database
-  connectDB();
+const startServer = async () => {
+  try {
+    await connectDB();
+    if (process.env.NODE_ENV !== "production") {
+      app.listen(port, () => {
+        console.log(`Server is listening on http://localhost:${port}`);
+      });
+    }
+  } catch (error) {
+    console.log("Error checking/connecting DB", error);
+  }
+}
 
-  // Log server startup message
-  console.log(`Server is listening on http://localhost:${port}`);
-});
+startServer();
+
+export default app;
