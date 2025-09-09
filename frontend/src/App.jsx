@@ -1,15 +1,15 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import FloatingShape from "./components/FloatingShape";
-import SignUpPage from "./pages/SignUpPage";
-import LoginPage from "./pages/LoginPage";
-import EmailVerificationPage from "./pages/EmailVerificationPage.js";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import FloatingShape from "./components/FloatingShape.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import EmailVerificationPage from "./pages/EmailVerificationPage.jsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore.js";
 import { useEffect } from "react";
-import DashboardPage from "./pages/DashboardPage";
-import LoadingSpinner from "./components/LoadingSpinner";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
+import DashboardPage from "./pages/DashboardPage.jsx";
+import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 
 //protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children }) => {
 
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
-  if (isAuthenticated && user?.isVerified) {
+  if (isAuthenticated && user && user.isVerified) {
     return <Navigate to="/" replace />;
   }
   return children;
