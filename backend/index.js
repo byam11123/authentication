@@ -12,28 +12,19 @@ import authRoutes from "./routes/auth.route.js";
 dotenv.config();
 const app = express();
 
+// Path setup for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Debug: Log what we see
-console.log("Current __dirname:", __dirname);
-console.log("Contents of parent:", fs.readdirSync(path.join(__dirname, "..")));
-console.log(
-  "Does frontend/dist exist?",
-  fs.existsSync(path.join(__dirname, "..", "frontend", "dist")),
-);
-
-app.use(cors({ origin: "*", credentials: true }));
+// CORS
+app.use(cors({ origin: process.env.CLIENT_URL || "*", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// Test route
-app.get("/api/test", (req, res) => {
-  res.json({ message: "API working", cwd: process.cwd(), dirname: __dirname });
-});
-
+// API Routes
 app.use("/api/v1/auth", authRoutes);
 
+// Database connection (singleton for serverless)
 let isConnected = false;
 const connectOnce = async () => {
   if (!isConnected) {
@@ -43,17 +34,19 @@ const connectOnce = async () => {
 };
 connectOnce();
 
-// Serve static files only if folder exists
+// Serve static files only if dist exists
 const staticPath = path.join(__dirname, "..", "frontend", "dist");
 if (fs.existsSync(staticPath)) {
   app.use(express.static(staticPath));
   app.get(/^\/(?!api).*$/, (req, res) => {
     res.sendFile(path.join(staticPath, "index.html"));
   });
-} else {
-  app.get("/", (req, res) => {
-    res.json({ error: "Frontend build not found", path: staticPath });
-  });
+}
+
+// Local dev server (Vercel doesn't use this)
+if (process.env.NODE_ENV !== "production") {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => console.log(`Server on port ${port}`));
 }
 
 export default app;
