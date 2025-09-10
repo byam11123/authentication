@@ -19,5 +19,10 @@
             "src": "/",
             "dest": "backend/index.js"
         }
-    ]
+    ],
+    "build": {
+        "env": {
+            "NODE_ENV": "production"
+        }
+    }
 }

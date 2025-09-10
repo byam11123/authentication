@@ -3,47 +3,37 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
+import fs from "fs";
 
 import { connectDB } from "./db/connectDB.js";
 import authRoutes from "./routes/auth.route.js";
 
 dotenv.config();
-
 const app = express();
 
-// ✅ Fix: Proper __dirname for ES modules on Vercel
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Fix: Better CORS for Vercel
-const allowedOrigins = [
-  "http://localhost:5173",
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-  process.env.CLIENT_URL
-].filter(Boolean);
+// Debug: Log what we see
+console.log("Current __dirname:", __dirname);
+console.log("Contents of parent:", fs.readdirSync(path.join(__dirname, "..")));
+console.log(
+  "Does frontend/dist exist?",
+  fs.existsSync(path.join(__dirname, "..", "frontend", "dist")),
+);
 
-app.use(cors({
-  origin: process.env.NODE_ENV === "production" ? allowedOrigins : "http://localhost:5173",
-  credentials: true
-}));
-
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// API Routes
+// Test route
+app.get("/api/test", (req, res) => {
+  res.json({ message: "API working", cwd: process.cwd(), dirname: __dirname });
+});
+
 app.use("/api/v1/auth", authRoutes);
 
-// ✅ Fix: Correct path to frontend (sibling of backend folder)
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
-
-  app.get(/^\/(?!api).*$/, (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "frontend", "dist", "index.html"));
-  });
-}
-
-// ✅ Fix: Connect DB before exporting for serverless
 let isConnected = false;
 const connectOnce = async () => {
   if (!isConnected) {
@@ -51,18 +41,19 @@ const connectOnce = async () => {
     isConnected = true;
   }
 };
+connectOnce();
 
-// For local development
-if (process.env.NODE_ENV !== "production") {
-  const port = process.env.PORT || 5000;
-  connectOnce().then(() => {
-    app.listen(port, () => {
-      console.log(`Server listening on http://localhost:${port}`);
-    });
+// Serve static files only if folder exists
+const staticPath = path.join(__dirname, "..", "frontend", "dist");
+if (fs.existsSync(staticPath)) {
+  app.use(express.static(staticPath));
+  app.get(/^\/(?!api).*$/, (req, res) => {
+    res.sendFile(path.join(staticPath, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.json({ error: "Frontend build not found", path: staticPath });
   });
 }
-
-// Connect immediately for serverless cold start
-connectOnce();
 
 export default app;
