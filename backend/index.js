@@ -1,60 +1,68 @@
-// Import required modules and dependencies
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
 import path from "path";
+import { fileURLToPath } from 'url';
 
 import { connectDB } from "./db/connectDB.js";
 import authRoutes from "./routes/auth.route.js";
 
-// Load environment variables from .env file
 dotenv.config();
 
-// Initialize Express application
 const app = express();
-const port = process.env.PORT || 5000;
 
-const __dirname = path.resolve();
+// ✅ Fix: Proper __dirname for ES modules on Vercel
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Configure CORS for both development and production
-const corsOrigin = process.env.NODE_ENV === "production"
-  ? process.env.CLIENT_URL || true  // In production, use CLIENT_URL env var or allow all origins
-  : "http://localhost:5173";
+// ✅ Fix: Better CORS for Vercel
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+  process.env.CLIENT_URL
+].filter(Boolean);
 
-app.use(cors({ origin: corsOrigin, credentials: true }));
+app.use(cors({
+  origin: process.env.NODE_ENV === "production" ? allowedOrigins : "http://localhost:5173",
+  credentials: true
+}));
 
-// Middleware to parse JSON request bodies
 app.use(express.json());
-
-// Middleware to parse cookies from incoming requests
 app.use(cookieParser());
 
-// Mount authentication routes under the /api/v1/auth path
+// API Routes
 app.use("/api/v1/auth", authRoutes);
 
+// ✅ Fix: Correct path to frontend (sibling of backend folder)
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "frontend", "dist")));
+  app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
 
   app.get(/^\/(?!api).*$/, (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+    res.sendFile(path.join(__dirname, "..", "frontend", "dist", "index.html"));
   });
 }
-// Start the server and connect to the database
-const startServer = async () => {
-  try {
+
+// ✅ Fix: Connect DB before exporting for serverless
+let isConnected = false;
+const connectOnce = async () => {
+  if (!isConnected) {
     await connectDB();
-    if (process.env.NODE_ENV !== "production") {
-      app.listen(port, () => {
-        console.log(`Server is listening on http://localhost:${port}`);
-      });
-    }
-  } catch (error) {
-    console.log("Error checking/connecting DB", error);
+    isConnected = true;
   }
+};
+
+// For local development
+if (process.env.NODE_ENV !== "production") {
+  const port = process.env.PORT || 5000;
+  connectOnce().then(() => {
+    app.listen(port, () => {
+      console.log(`Server listening on http://localhost:${port}`);
+    });
+  });
 }
 
-startServer();
+// Connect immediately for serverless cold start
+connectOnce();
 
 export default app;
